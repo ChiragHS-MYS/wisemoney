@@ -9,13 +9,30 @@ import time
 import matplotlib.pyplot as plt
 
 # --- Backend Auto-Start (For Streamlit Cloud) ---
+# --- Backend Auto-Start (For Streamlit Cloud) ---
 @st.cache_resource
 def start_backend():
     # Start Uvicorn in a separate process
     cmd = [sys.executable, "-m", "uvicorn", "main:app", "--host", "127.0.0.1", "--port", "8000"]
-    return subprocess.Popen(cmd)
+    process = subprocess.Popen(cmd)
+    
+    # Wait for server to start
+    retries = 10
+    while retries > 0:
+        try:
+            requests.get("http://127.0.0.1:8000/")
+            print("Backend is running!")
+            return process
+        except:
+            time.sleep(2)
+            retries -= 1
+    
+    print("Backend failed to start.")
+    return process
 
-start_backend()
+if not st.session_state.get("backend_started"):
+    start_backend()
+    st.session_state["backend_started"] = True
 
 API_URL = "http://127.0.0.1:8000"
 
