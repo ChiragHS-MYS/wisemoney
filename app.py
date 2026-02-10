@@ -12,7 +12,16 @@ import matplotlib.pyplot as plt
 # --- Backend Auto-Start (For Streamlit Cloud) ---
 @st.cache_resource
 def start_backend():
-    # Start Uvicorn in a separate process
+    # 1. Check if backend is ALREADY running (e.g. locally in terminal)
+    try:
+        requests.get("http://127.0.0.1:8000/")
+        print("Backend is already running. Skipping auto-start.")
+        return None
+    except:
+        pass
+
+    # 2. If not, start Uvicorn (For Streamlit Cloud)
+    print("Starting backend...")
     cmd = [sys.executable, "-m", "uvicorn", "main:app", "--host", "127.0.0.1", "--port", "8000"]
     process = subprocess.Popen(cmd)
     
