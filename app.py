@@ -3,7 +3,19 @@ import streamlit as st
 import requests
 import pandas as pd
 import datetime
+import subprocess
+import sys
+import time
 import matplotlib.pyplot as plt
+
+# --- Backend Auto-Start (For Streamlit Cloud) ---
+@st.cache_resource
+def start_backend():
+    # Start Uvicorn in a separate process
+    cmd = [sys.executable, "-m", "uvicorn", "main:app", "--host", "127.0.0.1", "--port", "8000"]
+    return subprocess.Popen(cmd)
+
+start_backend()
 
 API_URL = "http://127.0.0.1:8000"
 
